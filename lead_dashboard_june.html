@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lead Campaign Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f3;
+      color: #1a1a18;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #73726c;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin: 2rem 0 0.75rem;
+    }
+
+    /* Metric cards */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .metric {
+      background: #ebebea;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #73726c;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 26px;
+      font-weight: 500;
+      color: #1a1a18;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: #73726c;
+      margin-top: 2px;
+    }
+
+    /* Chart cards */
+    .chart-card {
+      background: #ffffff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .chart-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 0.75rem;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      color: #73726c;
+    }
+
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-sq {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Campaign grid */
+    .campaign-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .camp-card {
+      background: #ffffff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .camp-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .camp-total {
+      font-size: 11px;
+      color: #73726c;
+      margin-bottom: 10px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .bar-label {
+      font-size: 11px;
+      color: #5f5e5a;
+      width: 130px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-wrap {
+      flex: 1;
+      background: #ebebea;
+      border-radius: 3px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .bar-count {
+      font-size: 11px;
+      color: #73726c;
+      width: 22px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .bar-pct {
+      font-size: 11px;
+      color: #73726c;
+      width: 32px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      .campaign-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lead Campaign Dashboard</h1>
+  <p class="subtitle">Since June 1 &nbsp;·&nbsp; 8 campaigns &nbsp;·&nbsp; 706 total leads</p>
+
+  <div class="section-title">All campaigns combined</div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Total leads</div><div class="metric-value">706</div></div>
+    <div class="metric"><div class="metric-label">Active clients</div><div class="metric-value">7</div><div class="metric-sub">1% of total</div></div>
+    <div class="metric"><div class="metric-label">Pending</div><div class="metric-value">154</div><div class="metric-sub">22% of total</div></div>
+    <div class="metric"><div class="metric-label">Closed</div><div class="metric-value">545</div><div class="metric-sub">77% of total</div></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Combined lead status breakdown (top 10)</div>
+    <div class="legend" id="combo-legend"></div>
+    <div style="position:relative;width:100%;height:340px;">
+      <canvas id="comboChart" role="img" aria-label="Donut chart of all lead statuses combined across 8 campaigns"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Leads by campaign</div>
+    <div style="position:relative;width:100%;height:260px;">
+      <canvas id="campBar" role="img" aria-label="Bar chart showing total lead count per campaign"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Conversion vs. closed rate by campaign</div>
+    <div class="legend">
+      <span><span class="legend-sq" style="background:#1d9e75"></span>Client rate</span>
+      <span><span class="legend-sq" style="background:#e24b4a"></span>Closed rate</span>
+      <span><span class="legend-sq" style="background:#378add"></span>Still pending / referred rate</span>
+    </div>
+    <div style="position:relative;width:100%;height:280px;">
+      <canvas id="ratesChart" role="img" aria-label="Grouped bar chart comparing client, closed, and pending rates per campaign"></canvas>
+    </div>
+  </div>
+
+  <div class="section-title">Individual campaign breakdown</div>
+  <div class="campaign-grid" id="camp-grid"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const campaigns = [
+      {
+        name: "slip&fallaccidentleads – pi",
+        total: 200,
+        statuses: [
+          {label:"Client", count:2},
+          {label:"Pending – No Contact Yet", count:49},
+          {label:"Pending – Follow Up Needed", count:1},
+          {label:"Pending – Needs Review", count:1},
+          {label:"Pending – Evidence Requested", count:2},
+          {label:"Referred Out – Pending", count:10},
+          {label:"Referred Out – Co-Counsel", count:1},
+          {label:"Closed – Unresponsive", count:33},
+          {label:"Closed – Bad Contact", count:5},
+          {label:"Closed – Unrealistic Demands", count:1},
+          {label:"Closed – Unrelated Practice", count:11},
+          {label:"Closed – Declined Services", count:6},
+          {label:"Closed – Insufficient Case", count:43},
+          {label:"Closed – No Injury", count:1},
+          {label:"Closed – SOL Expired", count:24},
+          {label:"Closed – Outside Settlement", count:1},
+          {label:"Closed – DO NOT CONTACT", count:4},
+          {label:"Closed – Spam", count:5}
+        ]
+      },
+      {
+        name: "block company car accident pi ad",
+        total: 24,
+        statuses: [
+          {label:"Client", count:4},
+          {label:"Pending – No Contact Yet", count:6},
+          {label:"Closed – Unresponsive", count:2},
+          {label:"Closed – Bad Contact", count:5},
+          {label:"Closed – Insufficient Case", count:3},
+          {label:"Closed – No Injury", count:2},
+          {label:"Closed – Outside Settlement", count:1},
+          {label:"Closed – DO NOT CONTACT", count:1}
+        ]
+      },
+      {
+        name: "dog bite pi_lead gen",
+        total: 71,
+        statuses: [
+          {label:"Pending – No Contact Yet", count:16},
+          {label:"Referred Out – Pending", count:2},
+          {label:"Closed – Unresponsive", count:10},
+          {label:"Closed – Bad Contact", count:16},
+          {label:"Closed – Declined Services", count:5},
+          {label:"Closed – Insufficient Case", count:8},
+          {label:"Closed – No Injury", count:2},
+          {label:"Closed – SOL Expired", count:4},
+          {label:"Closed – DO NOT CONTACT", count:1},
+          {label:"Closed – Spam", count:7}
+        ]
+      },
+      {
+        name: "slip&fallaccidentleads – pi – nevada",
+        total: 111,
+        statuses: [
+          {label:"Pending – No Contact Yet", count:16},
+          {label:"Referred Out – Pending", count:5},
+          {label:"Closed (Dont Use)", count:1},
+          {label:"Closed – Unresponsive", count:19},
+          {label:"Closed – Bad Contact", count:12},
+          {label:"Closed – Unrelated Practice", count:4},
+          {label:"Closed – Declined Services", count:2},
+          {label:"Closed – Insufficient Case", count:28},
+          {label:"Closed – No Injury", count:2},
+          {label:"Closed – SOL Expired", count:14},
+          {label:"Closed – Outside Settlement", count:1},
+          {label:"Closed – DO NOT CONTACT", count:2},
+          {label:"Closed – Spam", count:5}
+        ]
+      },
+      {
+        name: "motorcycle ad pi",
+        total: 35,
+        statuses: [
+          {label:"Pending – No Contact Yet", count:8},
+          {label:"Pending – Evidence Requested", count:2},
+          {label:"Closed – Unresponsive", count:1},
+          {label:"Closed – Bad Contact", count:9},
+          {label:"Closed – Declined Services", count:3},
+          {label:"Closed – No Injury", count:3},
+          {label:"Closed – SOL Expired", count:2},
+          {label:"Closed – DO NOT CONTACT", count:3},
+          {label:"Closed – Spam", count:4}
+        ]
+      },
+      {
+        name: "pi_laradius_brandedads_english_catchallform",
+        total: 88,
+        statuses: [
+          {label:"Pending – No Contact Yet", count:17},
+          {label:"Referred Out – Pending", count:5},
+          {label:"Referred Out – Rejected", count:1},
+          {label:"Closed – Unresponsive", count:8},
+          {label:"Closed – Bad Contact", count:9},
+          {label:"Closed – Unrelated Practice", count:13},
+          {label:"Closed – Declined Services", count:6},
+          {label:"Closed – Insufficient Case", count:15},
+          {label:"Closed – No Injury", count:1},
+          {label:"Closed – SOL Expired", count:6},
+          {label:"Closed – Settled (Dont Use)", count:1},
+          {label:"Closed – Outside Settlement", count:5},
+          {label:"Closed – Spam", count:1}
+        ]
+      },
+      {
+        name: "second opinion pi ad – spanish",
+        total: 89,
+        statuses: [
+          {label:"Client", count:1},
+          {label:"Pending – No Contact Yet", count:11},
+          {label:"Pending – Follow Up Needed", count:2},
+          {label:"Referred Out – Pending", count:1},
+          {label:"Closed – Unresponsive", count:11},
+          {label:"Closed – Bad Contact", count:8},
+          {label:"Closed – Unrelated Practice", count:9},
+          {label:"Closed – Declined Services", count:6},
+          {label:"Closed – Insufficient Case", count:9},
+          {label:"Closed – No Injury", count:10},
+          {label:"Closed – SOL Expired", count:2},
+          {label:"Closed – Settled (Dont Use)", count:2},
+          {label:"Closed – Outside Settlement", count:10},
+          {label:"Closed – DO NOT CONTACT", count:2},
+          {label:"Closed – Spam", count:5}
+        ]
+      },
+      {
+        name: "v2june – companycaraccidentleads_pi",
+        total: 88,
+        statuses: [
+          {label:"Pending – No Contact Yet", count:21},
+          {label:"Referred Out – Pending", count:1},
+          {label:"Closed – Unresponsive", count:9},
+          {label:"Closed – Bad Contact", count:13},
+          {label:"Closed – Unrelated Practice", count:1},
+          {label:"Closed – Declined Services", count:6},
+          {label:"Closed – Insufficient Case", count:7},
+          {label:"Closed – No Injury", count:4},
+          {label:"Closed – SOL Expired", count:5},
+          {label:"Closed – Settled (Dont Use)", count:1},
+          {label:"Closed – Outside Settlement", count:1},
+          {label:"Closed – DO NOT CONTACT", count:1},
+          {label:"Closed – Spam", count:18}
+        ]
+      }
+    ];
+
+    function categorize(statuses) {
+      let clients=0, pending=0, referred=0, closed=0;
+      statuses.forEach(s => {
+        const l = s.label.toLowerCase();
+        if (l === 'client') clients += s.count;
+        else if (l.startsWith('pending')) pending += s.count;
+        else if (l.startsWith('referred')) referred += s.count;
+        else closed += s.count;
+      });
+      return {clients, pending, referred, closed};
+    }
+
+    function statusColor(label) {
+      const l = label.toLowerCase();
+      if (l === 'client') return '#1d9e75';
+      if (l.startsWith('pending')) return '#378add';
+      if (l.startsWith('referred')) return '#534ab7';
+      return '#e24b4a';
+    }
+
+    function shortLabel(label) {
+      return label
+        .replace('Closed – ', '')
+        .replace('Pending – ', 'P: ')
+        .replace('Referred Out – ', 'R: ')
+        .replace('Closed (Dont Use)', 'Closed (N/A)');
+    }
+
+    // Combined status totals
+    const allStatuses = {};
+    campaigns.forEach(c => {
+      c.statuses.forEach(s => {
+        allStatuses[s.label] = (allStatuses[s.label] || 0) + s.count;
+      });
+    });
+
+    const topStatuses = Object.entries(allStatuses).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const donutColors = ['#378add','#1d9e75','#e24b4a','#ba7517','#534ab7','#d4537e','#3b6d11','#d85a30','#0f6e56','#73726c'];
+
+    // Donut legend
+    const legend = document.getElementById('combo-legend');
+    topStatuses.forEach(([label, count], i) => {
+      const span = document.createElement('span');
+      span.innerHTML = `<span class="legend-sq" style="background:${donutColors[i]}"></span>${label}: ${count}`;
+      legend.appendChild(span);
+    });
+
+    // Donut chart
+    new Chart(document.getElementById('comboChart'), {
+      type: 'doughnut',
+      data: {
+        labels: topStatuses.map(s=>s[0]),
+        datasets: [{
+          data: topStatuses.map(s=>s[1]),
+          backgroundColor: donutColors,
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    // Campaign name shortener for axis labels
+    const campNames = campaigns.map(c => c.name.split(/[\s–_-]+/).slice(0,3).join(' '));
+
+    // Leads by campaign bar
+    new Chart(document.getElementById('campBar'), {
+      type: 'bar',
+      data: {
+        labels: campNames,
+        datasets: [{
+          label: 'Total leads',
+          data: campaigns.map(c=>c.total),
+          backgroundColor: '#378add',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 11 }, autoSkip: false, maxRotation: 35 } },
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Rates grouped bar
+    new Chart(document.getElementById('ratesChart'), {
+      type: 'bar',
+      data: {
+        labels: campNames,
+        datasets: [
+          {
+            label: 'Client %',
+            data: campaigns.map(c => { const {clients} = categorize(c.statuses); return Math.round(clients/c.total*100); }),
+            backgroundColor: '#1d9e75', borderRadius: 3
+          },
+          {
+            label: 'Closed %',
+            data: campaigns.map(c => { const {closed} = categorize(c.statuses); return Math.round(closed/c.total*100); }),
+            backgroundColor: '#e24b4a', borderRadius: 3
+          },
+          {
+            label: 'Pending %',
+            data: campaigns.map(c => { const {pending,referred} = categorize(c.statuses); return Math.round((pending+referred)/c.total*100); }),
+            backgroundColor: '#378add', borderRadius: 3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 11 }, autoSkip: false, maxRotation: 35 } },
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v+'%' } }
+        }
+      }
+    });
+
+    // Individual campaign cards — ALL statuses
+    const grid = document.getElementById('camp-grid');
+    campaigns.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'camp-card';
+      const sorted = [...c.statuses].sort((a,b)=>b.count-a.count);
+      const rows = sorted.map(s => {
+        const pct = Math.round(s.count/c.total*100);
+        const color = statusColor(s.label);
+        return `<div class="bar-row">
+          <div class="bar-label" title="${s.label}">${shortLabel(s.label)}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${Math.max(pct,1)}%;background:${color}"></div></div>
+          <div class="bar-count">${s.count}</div>
+          <div class="bar-pct">${pct}%</div>
+        </div>`;
+      }).join('');
+      card.innerHTML = `
+        <div class="camp-title" title="${c.name}">${c.name}</div>
+        <div class="camp-total">${c.total} total leads</div>
+        ${rows}
+      `;
+      grid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
